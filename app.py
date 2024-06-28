@@ -3,6 +3,8 @@ from PIL import Image
 import requests
 from dotenv import load_dotenv
 import os
+import tempfile
+
 
 # Set page tab display
 st.set_page_config(
@@ -17,7 +19,8 @@ st.set_page_config(
 # Example localhost development URL
 # url = 'http://localhost:8000'
 load_dotenv()
-url = os.getenv('API_URL')
+#url = os.getenv('API_URL')
+url="http://127.0.0.1:8000"
 
 # App title and description
 st.header('Skin Cancer Detection Tool 📸')
@@ -42,6 +45,11 @@ st.markdown('''
 ### Create a native Streamlit file upload input
 st.markdown("### Upload a mole's picture for skin cancer detection 👇")
 img_file_buffer = st.file_uploader('Upload an image of a mole')
+if img_file_buffer is not None:
+    # Save the uploaded image to a temporary file to prevent a streamlit bug
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        temp_file.write(img_file_buffer.read())
+        temp_file_path = temp_file.name
 
 if img_file_buffer is not None:
 
@@ -57,11 +65,12 @@ if img_file_buffer is not None:
       img_bytes = img_file_buffer.getvalue()
 
       ### Make request to API (stream=True to stream response as bytes)
-      res = requests.post(url + "/upload_image", files={'img': img_bytes})
+      res = requests.post(url + "/predict", files={'file': open(temp_file_path,"rb")})
 
       if res.status_code == 200:
         ### Display the image returned by the API
-        st.image(res.content, caption="Image returned from API ☝️")
+        #st.image(res.content, caption="Image returned from API ☝️")
+        st.markdown(res.content)
       else:
         st.markdown("**Oops**, something went wrong 😓 Please try again.")
         print(res.status_code, res.content)
