@@ -20,7 +20,7 @@ st.set_page_config(
 # url = 'http://localhost:8000'
 load_dotenv()
 #url = os.getenv('API_URL')
-url="http://127.0.0.1:8000"
+url="https://apiskincancerprevention-hetftldjwa-ew.a.run.app"
 
 # App title and description
 st.header('Skin Cancer Detection Tool 📸')
@@ -65,7 +65,7 @@ if img_file_buffer is not None:
       img_bytes = img_file_buffer.getvalue()
 
       ### Make request to API (stream=True to stream response as bytes)
-      res = requests.post(url + "/predict", files={'file': open(temp_file_path,"rb")})
+      res = requests.post(url + "/predict/", files={'file': open(temp_file_path,"rb")})
 
       if res.status_code == 200:
         ### Display the image returned by the API
