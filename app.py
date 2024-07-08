@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import os
 import tempfile
 
+import json
 
 # Set page tab display
 st.set_page_config(
@@ -43,6 +44,15 @@ st.markdown('''
             **Disclaimer:** This tool is written to showcase the capabilities of AI deployment into medical fields and does not offer medical advice. For any medical advice, please consult a doctor.
             ''')
 
+
+# Function to calculate color based on percentage
+def get_color(percentage):
+    r = int(255 * (percentage / 100))
+    g = int(255 * ((100 - percentage) / 100))
+    return f'rgb({r}, {g}, 0)'
+
+
+
 ### Create a native Streamlit file upload input
 st.markdown("### Upload a mole's picture for skin cancer detection 👇")
 img_file_buffer = st.file_uploader('Upload an image of a mole')
@@ -67,11 +77,22 @@ if img_file_buffer is not None:
 
       ### Make request to API (stream=True to stream response as bytes)
       res = requests.post(url + "/predict/", files={'file': open(temp_file_path,"rb")})
-
+      resultat = str(res._content)
       if res.status_code == 200:
         ### Display the image returned by the API
-        #st.image(res.content, caption="Image returned from API ☝️")
-        st.markdown(res.content)
+
+
+        response_dict = json.loads(res.content)
+        probability = response_dict.get('prediction')
+        percentage = probability *100
+        color = get_color(percentage)
+
+        # # Display the result as a percentage
+        st.markdown(f"<span style='color:{color}; font-size:24px;'>Probability of Skin Cancer: {percentage:.2f}%</span>", unsafe_allow_html=True)
+
+
+
+
       else:
         st.markdown("**Oops**, something went wrong 😓 Please try again.")
-        print(res.status_code, res.content)
+        print(res.content)
