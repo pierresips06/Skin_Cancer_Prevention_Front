@@ -20,7 +20,8 @@ st.set_page_config(
 # url = 'http://localhost:8000'
 load_dotenv()
 #url = os.getenv('API_URL')
-url="https://apiskincancerprevention-hetftldjwa-ew.a.run.app"
+# url="https://apiskincancerprevention-hetftldjwa-ew.a.run.app" #initial model
+url="https://apiskincancerpreventionmodelvgg-hetftldjwa-ew.a.run.app"
 
 # App title and description
 st.header('Skin Cancer Detection Tool 📸')
